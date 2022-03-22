@@ -30,7 +30,6 @@ sub-directory and file.
 ```bash
 package-bundler --help
 
-/src/cli.ts --help
 Options:
       --version             Show version number                        [boolean]
   -c, --copyPackageJson     If true, copies the package json for the package to
