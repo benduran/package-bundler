@@ -1,7 +1,6 @@
 {
   "private": false,
   "name": "@better-builds/package-bundler",
-  "main": "./index.js",
   "bin": "./index.js",
   "version": "1.0.2",
   "license": "MIT",
@@ -9,7 +8,8 @@
     "precommit": "pnpm lint && pnpm test",
     "clean": "rm -rf ./dist",
     "start": "TS_NODE_FILES=true ts-node --project ./tsconfig.json ./src/cli.ts",
-    "build": "rm -rf ./dist && tsc --project ./tsconfig.json && cp ./package.json ./dist",
+    "build": "./scripts/prepDist.js",
+    "build:publish": "./scripts/prepDist.js && cd ./dist && npm publish --access public",
     "lint": "eslint './src/**/*.{ts,tsx}'",
     "lint:fixall": "eslint './src/**/*.{ts,tsx}' --fix",
     "prepublishOnly": "pnpm build",
