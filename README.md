@@ -11,15 +11,15 @@ sub-directory and file.
 
 **npm**
 
-`npm install @clever-builds/package-bundler -D`
+`npm install @better-builds/package-bundler -D`
 
 **yarn**
 
-`yarn add @clever-builds/package-bundler -D`
+`yarn add @better-builds/package-bundler -D`
 
 **pnpm**
 
-`pnpm add @clever-builds/package-bundler -D`
+`pnpm add @better-builds/package-bundler -D`
 
 ## usage
 
