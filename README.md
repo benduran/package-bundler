@@ -1,4 +1,4 @@
-# package-bundler
+# @better-builds/package-bundler
 
 A CLI for compiling and bundling your TypeScript with ESM/CJS and deep exports support, `package-bundler` builds and bundles TypeScript packages in a style similar to `@apollo/client` and `@mui/material`, with support for deep exports to allow consumers to pick and choose imports they want. Not all imports are essential to a library, and some may carry expensive third party dependencies.
 
@@ -11,15 +11,15 @@ sub-directory and file.
 
 **npm**
 
-`npm install package-bundler -D`
+`npm install @clever-builds/package-bundler -D`
 
 **yarn**
 
-`yarn add package-bundler -D`
+`yarn add @clever-builds/package-bundler -D`
 
 **pnpm**
 
-`pnpm add package-bundler -D`
+`pnpm add @clever-builds/package-bundler -D`
 
 ## usage
 
@@ -54,7 +54,7 @@ Options:
                             be excluded from the CommonJS build (they are
                             automatically excluded from the ESM build).
                                                                [array] [default:
-          ["/home/bduran/Documents/dev/netflix/hawkins-community/package.json"]]
+         ["./package.json"]]
       --sourcemap           If true, builds sourcemap files alongside your
                             compiled files             [boolean] [default: true]
   -s, --srcDir              Path to src directory relative to your package
@@ -66,3 +66,11 @@ Options:
                                            [string] [default: "./tsconfig.json"]
       --help                Show help                                  [boolean]
 ```
+
+## contributing
+
+This repository is using [pnpm](https://pnpm.io/) for its package manager. To get setup and running as quickly as possible, clone this repo and run the following command from the root of the repo:
+
+`npm run setup`
+
+This command will install the correct version of `pnpm` required for contributing, as well as all of the dependencies needed to run this package 👍

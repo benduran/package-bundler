@@ -1,0 +1,40 @@
+{
+  "private": false,
+  "name": "@better-builds/package-bundler",
+  "main": "./index.js",
+  "bin": "./index.js",
+  "scripts": {
+    "precommit": "pnpm lint && pnpm test",
+    "clean": "rm -rf ./dist",
+    "start": "TS_NODE_FILES=true ts-node --project ./tsconfig.json ./src/cli.ts",
+    "build": "rm -rf ./dist && tsc --project ./tsconfig.json && cp ./package.json ./dist",
+    "lint": "eslint './src/**/*.{ts,tsx}'",
+    "lint:fixall": "eslint './src/**/*.{ts,tsx}' --fix",
+    "prepublishOnly": "pnpm build",
+    "setup": "npm install -g pnpm@$(cat pnpm-version) && pnpm install",
+    "deps:check": "ncu -t minor",
+    "deps:update": "ncu -t minor -u",
+    "git-pre-commit": "pnpm lint && pnpm lint:fixall && pnpm deps:check"
+  },
+  "dependencies": {
+    "chalk": "^4.1.1",
+    "esbuild": "^0.14.2",
+    "esbuild-node-externals": "^1.4.1",
+    "esbuild-sass-plugin": "^2.0.0",
+    "fast-glob": "^3.2.9",
+    "fs-extra": "^10.0.1",
+    "yargs": "^17.3.1"
+  },
+  "devDependencies": {
+    "@types/command-exists": "^1.2.0",
+    "@types/fs-extra": "^9.0.13",
+    "@types/node": "^17.0.22",
+    "@types/yargs": "^17.0.8",
+    "@vercel/git-hooks": "^1.0.0",
+    "eslint-config-react-yas": "^2.0.0",
+    "npm-check-updates": "^12.5.4",
+    "ts-node": "^10.7.0",
+    "type-fest": "^2.9.0",
+    "typescript": "^4.6.2"
+  }
+}
