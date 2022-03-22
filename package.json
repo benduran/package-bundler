@@ -4,6 +4,7 @@
   "main": "./index.js",
   "bin": "./index.js",
   "version": "1.0.0",
+  "license": "MIT",
   "scripts": {
     "precommit": "pnpm lint && pnpm test",
     "clean": "rm -rf ./dist",
