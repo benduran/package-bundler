@@ -3,7 +3,7 @@
   "name": "@better-builds/package-bundler",
   "main": "./index.js",
   "bin": "./index.js",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "license": "MIT",
   "scripts": {
     "precommit": "pnpm lint && pnpm test",
