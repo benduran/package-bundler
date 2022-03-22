@@ -22,3 +22,9 @@ delete pjson.scripts;
 
 // 5. Write package.json to the dist folder because we publish from *inside* the distDir
 fs.writeFileSync(path.join(distDir, 'package.json'), JSON.stringify(pjson, null, 2), 'utf-8');
+
+// 6. Copy the Readme to dist
+fs.createReadStream(path.join(__dirname, '../README.md')).pipe(fs.createWriteStream(path.join(distDir, 'README.md')));
+
+// 7. Copy the License over
+fs.createReadStream(path.join(__dirname, '../LICENSE')).pipe(fs.createWriteStream(path.join(distDir, 'LICENSE')));
