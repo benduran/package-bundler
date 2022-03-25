@@ -39,7 +39,7 @@ Options:
   -i, --ignorePaths         Array of file glob paths to exclude in the source(s)
                             being compiled.
   [array] [default: ["**/*__doc**/**","**/*__test**/**","**/*__stori**/**","**/*
-                       .spec*","**/*.test*","**/*.stories*","**/*__snipp**/**"]]
+     .spec.*","**/*.test.*","**/*.stories.*","**/*.story.*","**/*__snipp**/**"]]
   -r, --rewritePackageJson  If true, and used in conjunction with
                             ---copyPackageJson option, will attempt to inject
                             and / or rewrite the "main," "module," "typings,"
@@ -54,7 +54,7 @@ Options:
                             be excluded from the CommonJS build (they are
                             automatically excluded from the ESM build).
                                                                [array] [default:
-         ["./package.json"]]
+         ["/home/bduran/Documents/dev/opensource/package-bundler/package.json"]]
       --sourcemap           If true, builds sourcemap files alongside your
                             compiled files             [boolean] [default: true]
   -s, --srcDir              Path to src directory relative to your package
@@ -66,6 +66,38 @@ Options:
                                            [string] [default: "./tsconfig.json"]
       --help                Show help                                  [boolean]
 ```
+
+### plugins
+[esbuild](https://esbuild.github.io/plugins/) supports plugins for adapting builds to your needs. `package-bundler` allows you to provide your own plugins to enrich the sensible defaults provided by `package-bundler`. To do this, you can create a file named `package-bundler.plugins.js` in your repository (or whenever your CWD will be when building with `package-bundler`). This file should have the following format:
+
+```javascript
+module.exports = {
+  /**
+   * (Optional) Place all CommonJS-specific plugins here. These will *only*
+   * apply to the CommonJS-compiled code
+   */
+  cjs: [],
+  /**
+   * (Optional) Place all ESM-specific plugins here. These will *only*
+   * apply to the ESM-compiled code
+   */
+  esm: [],
+};
+```
+
+#### Here's a real-world example that adds support for PostCSS, AutoPrefixer and also inlines images into both CJS and ESM builds
+
+```javascript
+const autoprefixer = require('autoprefixer');
+const postCssPlugin = require('@deanc/esbuild-plugin-postcss');
+const inlineImage = require('esbuild-plugin-inline-image');
+
+module.exports = {
+  cjs: [postCssPlugin({ plugins: [autoprefixer] }), inlineImage()],
+  esm: [postCssPlugin({ plugins: [autoprefixer] }), inlineImage()],
+};
+```
+
 
 ## contributing
 
