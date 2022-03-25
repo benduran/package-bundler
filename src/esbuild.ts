@@ -1,11 +1,43 @@
 import * as esbuild from 'esbuild';
 import { nodeExternalsPlugin } from 'esbuild-node-externals';
-import { sassPlugin } from 'esbuild-sass-plugin';
 import glob from 'fast-glob';
 import fs from 'fs-extra';
 import path from 'path';
 
 import { executeCmd } from './executeCmd';
+
+interface ReadUserPluginsReturnType {
+  cjs: esbuild.Plugin[];
+  esm: esbuild.Plugin[];
+}
+
+/**
+ * Attempts to read a package-bundler.plugins.js
+ * file from the path.cwd(). Tries to read the default export and, if found,
+ * merges
+ */
+async function readUserPlugins(): Promise<Partial<ReadUserPluginsReturnType>> {
+  const defaultOut: ReadUserPluginsReturnType = { cjs: [], esm: [] };
+  const pluginFilePath = path.join(process.cwd(), 'package-bundler.plugins.js');
+  try {
+    const stat = await fs.stat(pluginFilePath);
+    if (stat.isFile()) {
+      const { default: plugins }: { default: Partial<ReadUserPluginsReturnType> | undefined } = await import(
+        pluginFilePath
+      );
+      if (!plugins || (!plugins.cjs && !plugins.esm)) {
+        console.warn(
+          `User plugins for package-bundler found at ${pluginFilePath} are an invalid format. Expected default export object in the following shape:\n { cjs: [], esm: [] }`,
+        );
+        return defaultOut;
+      }
+      return plugins;
+    }
+  } catch (error) {
+    console.warn(`Error reading user plugins for package-bundler from ${pluginFilePath}`);
+  }
+  return defaultOut;
+}
 
 export async function buildESM(srcFilesToCompile: string[], outDir: string, sourcemap: boolean, target: string[]) {
   await esbuild.build({
@@ -15,7 +47,7 @@ export async function buildESM(srcFilesToCompile: string[], outDir: string, sour
     entryPoints: srcFilesToCompile,
     format: 'esm',
     outdir: outDir,
-    plugins: [sassPlugin()],
+    plugins: (await readUserPlugins()).esm,
   });
 }
 
@@ -27,6 +59,7 @@ export async function buildCJS(
   packageJsonFiles: string[],
   target: string[],
 ) {
+  const userPlugins = await readUserPlugins();
   await esbuild.build({
     sourcemap,
     target,
@@ -38,7 +71,7 @@ export async function buildCJS(
       nodeExternalsPlugin({
         packagePath: packageJsonFiles,
       }),
-      sassPlugin(),
+      ...(userPlugins.cjs ?? []),
     ],
   });
   const compiledCJSFiles = glob.sync(path.join(outDir, 'cjs', '**', '*.js'), { absolute: true, onlyFiles: true });
