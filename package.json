@@ -35,7 +35,7 @@
   },
   "dependencies": {
     "chalk": "^4.1.2",
-    "esbuild": "^0.14.27",
+    "esbuild": "^0.14.29",
     "esbuild-node-externals": "^1.4.1",
     "fast-glob": "^3.2.11",
     "fs-extra": "^10.0.1",
@@ -49,7 +49,7 @@
     "eslint-config-react-yas": "^2.0.0",
     "npm-check-updates": "^12.5.4",
     "ts-node": "^10.7.0",
-    "type-fest": "^2.12.1",
+    "type-fest": "^2.12.2",
     "typescript": "^4.6.3"
   }
 }
