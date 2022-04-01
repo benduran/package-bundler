@@ -7,6 +7,10 @@ sub-directory and file.
 
 `package-bundler` uses [esbuild](https://github.com/evanw/esbuild) to transpile TypeScript to JavaScript in both CommonJS and ESM formats. `package-bundler` also produces `*.d.ts` files so you can ship proper typings with your package, all with zero-to-minimal configuration.
 
+## used by
+
+![Netflix](./docs/assets/logos/netflix.png)
+
 ## installation
 
 **npm**
