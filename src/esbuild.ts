@@ -96,10 +96,15 @@ export async function buildCJS(
         name: `${packageName}/${packageJsonSubPackageName.replace(/^(\/|\\)/, '')}`,
         types: 'index.d.ts',
       };
-      fs.writeFileSync(
-        path.join(outDir, `.${packageJsonSubPackageName}`, 'package.json'),
-        JSON.stringify(pJsonTemplate, null, 2),
-        'utf8',
-      );
+      if (packageJsonSubPackageName) {
+        // Don't write a package.json file for the root of the outDir if there isn't a sub name.
+        // This ensures we don't accidentally clobber the package.json file if the --copyPackageJson and / or --rewritePackageJson
+        // options are set
+        fs.writeFileSync(
+          path.join(outDir, `.${packageJsonSubPackageName}`, 'package.json'),
+          JSON.stringify(pJsonTemplate, null, 2),
+          'utf8',
+        );
+      }
     });
 }
