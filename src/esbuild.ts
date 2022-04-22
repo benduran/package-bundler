@@ -34,7 +34,7 @@ async function readUserPlugins(): Promise<Partial<ReadUserPluginsReturnType>> {
       return plugins;
     }
   } catch (error) {
-    console.warn(`Error reading user plugins for package-bundler from ${pluginFilePath}`);
+    console.warn(`Warning: Could not read user plugins to use for package-bundler from ${pluginFilePath}`);
   }
   return defaultOut;
 }
