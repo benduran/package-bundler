@@ -1,7 +1,7 @@
 {
   "private": false,
   "name": "@better-builds/package-bundler",
-  "bin": "./index.js",
+  "bin": "index.js",
   "version": "1.2.5",
   "license": "MIT",
   "repository": {

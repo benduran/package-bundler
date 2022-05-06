@@ -1,0 +1,19 @@
+{
+  "name": "copypackagejson-example",
+  "version": "0.0.1",
+  "description": "An example where the package.json file specifies a built file, but from in the context of the dist/ dir post build. This example also has deep-imports, which are paths not included in the default index.js export, but can be imported by the consumers of this pacakge.",
+  "main": "index.cjs.js",
+  "module": "index.js",
+  "types": "index.d.ts",
+  "scripts": {
+    "build": "rm -rf dist/ && package-bundler --copyPackageJson"
+  },
+  "dependencies": {
+    "randomatic": "^3.1.1"
+  },
+  "devDependencies": {
+    "@better-builds/package-bundler": "^1.2.5",
+    "@types/randomatic": "^3.1.3",
+    "typescript": "^4.6.3"
+  }
+}

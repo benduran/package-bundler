@@ -1,0 +1,19 @@
+{
+  "name": "copyandrewritepackagejson-example",
+  "version": "0.0.1",
+  "description": "An example where you want to support deep exports, and you want the package bundler to copy and update the package.json that gets rendered to the dist/ folder. This example has deep-imports, which are paths not included in the default index.js export, but can be imported by the consumers of this pacakge.",
+  "main": "index.cjs.js",
+  "module": "index.js",
+  "types": "index.d.ts",
+  "scripts": {
+    "build": "rm -rf dist/ && package-bundler --copyPackageJson --rewritePackageJson"
+  },
+  "dependencies": {
+    "randomatic": "^3.1.1"
+  },
+  "devDependencies": {
+    "@better-builds/package-bundler": "^1.2.5",
+    "@types/randomatic": "^3.1.3",
+    "typescript": "^4.6.3"
+  }
+}

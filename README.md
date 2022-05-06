@@ -29,6 +29,10 @@ sub-directory and file.
 
 `package-bundler` is meant to be used *exclusively* from within a TypeScript codebase. It also makes some assumptions about your codebase, namely, that each folder in your source code contains a proper `index.ts` or `index.tsx` file that imports and / or exports anything that is needed. Without this `index.ts` or `index.tsx` file, Package Bundler will only be able to emit a valid ESM module. CommonJS compilation and bundling will not work without these index files!
 
+## examples
+
+Checkout the three examples in the [examples](./examples/) folder
+
 ### cli
 
 ```bash
