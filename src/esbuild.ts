@@ -39,8 +39,15 @@ async function readUserPlugins(): Promise<Partial<ReadUserPluginsReturnType>> {
   return defaultOut;
 }
 
-export async function buildESM(srcFilesToCompile: string[], outDir: string, sourcemap: boolean, target: string[]) {
+export async function buildESM(
+  srcFilesToCompile: string[],
+  outDir: string,
+  sourcemap: boolean,
+  target: string[],
+  platform: esbuild.Platform = 'browser',
+) {
   await esbuild.build({
+    platform,
     sourcemap,
     target,
     bundle: false,
@@ -58,9 +65,11 @@ export async function buildCJS(
   sourcemap: boolean,
   packageJsonFiles: string[],
   target: string[],
+  platform: esbuild.Platform = 'browser',
 ) {
   const userPlugins = await readUserPlugins();
   await esbuild.build({
+    platform,
     sourcemap,
     target,
     bundle: true,
