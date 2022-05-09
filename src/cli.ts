@@ -4,6 +4,7 @@
  */
 
 import chalk from 'chalk';
+import type esbuild from 'esbuild';
 import glob from 'fast-glob';
 import fs from 'fs-extra';
 import path from 'path';
@@ -19,6 +20,7 @@ async function packageBundlerCli() {
     copyPackageJson,
     ignorePaths,
     packageJsonFiles,
+    platform,
     rewritePackageJson,
     sourcemap,
     srcDir,
@@ -68,6 +70,12 @@ async function packageBundlerCli() {
       description:
         'An array of all of the package.json file locations that contain dependencies for your package. The dependencies listed in these package.json files will be excluded from the CommonJS build (they are automatically excluded from the ESM build).',
       type: 'array',
+    })
+    .option('platform', {
+      choices: ['browser', 'node', 'neutral'],
+      default: 'browser',
+      description: 'Which ESBuild platform to target for the build.',
+      type: 'string',
     })
     .option('sourcemap', {
       default: true,
@@ -130,8 +138,8 @@ async function packageBundlerCli() {
 
   await Promise.all([
     buildTypes(cwd, justTheName, outDir, tsconfigPath),
-    buildESM(srcFilesToCompile, outDir, sourcemap, target),
-    buildCJS(packageName, cjsFilesToCompile, outDir, sourcemap, packageJsonFiles, target),
+    buildESM(srcFilesToCompile, outDir, sourcemap, target, platform as esbuild.Platform),
+    buildCJS(packageName, cjsFilesToCompile, outDir, sourcemap, packageJsonFiles, target, platform as esbuild.Platform),
   ]);
   if (copyPackageJson) {
     await copyPackageJsonFile(cwd, outDir);
