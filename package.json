@@ -2,7 +2,7 @@
   "private": false,
   "name": "@better-builds/package-bundler",
   "bin": "index.js",
-  "version": "1.2.7",
+  "version": "1.2.8",
   "license": "MIT",
   "repository": {
     "type": "git",
