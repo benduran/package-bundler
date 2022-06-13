@@ -4,20 +4,20 @@
  */
 
 import chalk from 'chalk';
-import type esbuild from 'esbuild';
 import glob from 'fast-glob';
 import fs from 'fs-extra';
 import path from 'path';
 import yargs from 'yargs';
 
 import { cleanDist } from './cleanDist';
-import { buildCJS, buildESM } from './esbuild';
+import { BuildBaseArgs, buildCJS, buildESM } from './esbuild';
 import { copyPackageJsonFile, rewritePackageJsonFile } from './packageJson';
 import { buildTypes } from './typescript';
 
 async function packageBundlerCli() {
   const {
     copyPackageJson,
+    external,
     ignorePaths,
     packageJsonFiles,
     platform,
@@ -35,6 +35,13 @@ async function packageBundlerCli() {
       description:
         'If true, copies the package json for the package to the outDir. Useful if you are using yarn, pnpm, lerna, or some other non vanilla NPM way of publishing your packages.',
       type: 'boolean',
+    })
+    .option('external', {
+      alias: 'e',
+      default: [],
+      description:
+        "Marks one or more packages or file paths as external, and that these packages or paths should not be included in the build. For more information, see ESBuild's official documentation: https://esbuild.github.io/api/#external",
+      type: 'array',
     })
     .option('ignorePaths', {
       alias: 'i',
@@ -138,8 +145,24 @@ async function packageBundlerCli() {
 
   await Promise.all([
     buildTypes(cwd, justTheName, outDir, tsconfigPath),
-    buildESM(srcFilesToCompile, outDir, sourcemap, target, platform as esbuild.Platform),
-    buildCJS(packageName, cjsFilesToCompile, outDir, sourcemap, packageJsonFiles, target, platform as esbuild.Platform),
+    buildESM({
+      external,
+      outDir,
+      platform: platform as BuildBaseArgs['platform'],
+      sourcemap,
+      srcFilesToCompile,
+      target,
+    }),
+    buildCJS({
+      external,
+      outDir,
+      packageJsonFiles,
+      packageName,
+      platform: platform as BuildBaseArgs['platform'],
+      sourcemap,
+      srcFilesToCompile: cjsFilesToCompile,
+      target,
+    }),
   ]);
   if (copyPackageJson) {
     await copyPackageJsonFile(cwd, outDir);
