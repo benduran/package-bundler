@@ -14,11 +14,23 @@ import { BuildBaseArgs, buildCJS, buildESM } from './esbuild';
 import { copyPackageJsonFile, rewritePackageJsonFile } from './packageJson';
 import { buildTypes } from './typescript';
 
+const DEFAULT_IGNORE_PATHS = [
+  '**/*__doc**/**',
+  '**/*__test**/**',
+  '**/*__stori**/**',
+  '**/*.spec.*',
+  '**/*.test.*',
+  '**/*.stories.*',
+  '**/*.story.*',
+  '**/*__snipp**/**',
+];
+
 async function packageBundlerCli() {
   const {
     copyPackageJson,
     external,
     ignorePaths,
+    mergeIgnorePaths,
     packageJsonFiles,
     platform,
     rewritePackageJson,
@@ -45,24 +57,15 @@ async function packageBundlerCli() {
     })
     .option('ignorePaths', {
       alias: 'i',
-      default: [
-        '**/*__doc**/**',
-        '**/*__test**/**',
-        '**/*__stori**/**',
-        '**/*.spec.*',
-        '**/*.test.*',
-        '**/*.stories.*',
-        '**/*.story.*',
-        '**/*__snipp**/**',
-      ],
-      description: 'Array of file glob paths to exclude in the source(s) being compiled.',
+      default: DEFAULT_IGNORE_PATHS,
+      description:
+        'Array of file glob paths to exclude in the source(s) being compiled. If you like these defaults, want to keep them, but also provide your own, you can set the --mergeIgnorePaths to have your paths merged with these.',
       type: 'array',
     })
-    .option('rewritePackageJson', {
-      alias: 'r',
-      default: false,
+    .option('mergeIgnorePaths', {
       description:
-        'If true, and used in conjunction with ---copyPackageJson option, will attempt to inject and / or rewrite the "main," "module," "typings," etc fields to where their paths exist in the --outDir folder',
+        "If true, merges any provided paths you've set via --ignorePaths with package-bundler's default ones.",
+      default: false,
       type: 'boolean',
     })
     .option('outDir', {
@@ -83,6 +86,13 @@ async function packageBundlerCli() {
       default: 'browser',
       description: 'Which ESBuild platform to target for the build.',
       type: 'string',
+    })
+    .option('rewritePackageJson', {
+      alias: 'r',
+      default: false,
+      description:
+        'If true, and used in conjunction with ---copyPackageJson option, will attempt to inject and / or rewrite the "main," "module," "typings," etc fields to where their paths exist in the --outDir folder',
+      type: 'boolean',
     })
     .option('sourcemap', {
       default: true,
@@ -132,14 +142,18 @@ async function packageBundlerCli() {
   fs.ensureDirSync(outDir);
   const { name: packageName } = packageJSON;
   const justTheName = packageName.includes('/') ? packageName.substring(packageName.lastIndexOf('/') + 1) : packageName;
+
+  const mergedIgnorePaths = mergeIgnorePaths ? [...DEFAULT_IGNORE_PATHS, ...ignorePaths] : ignorePaths;
+
   const srcFilesToCompile = glob.sync(path.join(cwd, srcDir, '**', '*.{tsx,ts}'), {
     absolute: true,
-    ignore: ignorePaths,
+    ignore: mergedIgnorePaths,
     onlyFiles: true,
   });
 
   const cjsFilesToCompile = glob.sync(path.join(cwd, srcDir, '**', 'index.{tsx,ts}'), {
     absolute: true,
+    ignore: mergedIgnorePaths,
     onlyFiles: true,
   });
 
