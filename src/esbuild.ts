@@ -6,6 +6,8 @@ import path from 'path';
 
 import { executeCmd } from './executeCmd';
 
+const DEFAULT_PLATFORM: esbuild.Platform = 'browser' as const;
+
 interface ReadUserPluginsReturnType {
   cjs: esbuild.Plugin[];
   esm: esbuild.Plugin[];
@@ -39,49 +41,67 @@ async function readUserPlugins(): Promise<Partial<ReadUserPluginsReturnType>> {
   return defaultOut;
 }
 
-export async function buildESM(
-  srcFilesToCompile: string[],
-  outDir: string,
-  sourcemap: boolean,
-  target: string[],
-  platform: esbuild.Platform = 'browser',
-) {
+export interface BuildBaseArgs {
+  external: string[];
+  outDir: string;
+  platform?: esbuild.Platform;
+  sourcemap: boolean;
+  srcFilesToCompile: string[];
+  target: string[];
+}
+
+export async function buildESM({
+  external,
+  outDir,
+  sourcemap,
+  srcFilesToCompile,
+  target,
+  platform = DEFAULT_PLATFORM,
+}: BuildBaseArgs) {
   await esbuild.build({
-    platform,
-    sourcemap,
-    target,
     bundle: false,
     entryPoints: srcFilesToCompile,
+    external,
     format: 'esm',
     outdir: outDir,
+    platform,
     plugins: (await readUserPlugins()).esm,
+    sourcemap,
+    target,
   });
 }
 
-export async function buildCJS(
-  packageName: string,
-  cjsFilesToCompile: string[],
-  outDir: string,
-  sourcemap: boolean,
-  packageJsonFiles: string[],
-  target: string[],
-  platform: esbuild.Platform = 'browser',
-) {
+export interface BuildCJSArgs extends BuildBaseArgs {
+  packageName: string;
+  packageJsonFiles: string[];
+}
+
+export async function buildCJS({
+  external,
+  outDir,
+  packageJsonFiles,
+  packageName,
+  platform = DEFAULT_PLATFORM,
+  sourcemap,
+  srcFilesToCompile,
+  target,
+}: BuildCJSArgs) {
   const userPlugins = await readUserPlugins();
   await esbuild.build({
-    platform,
-    sourcemap,
-    target,
     bundle: true,
-    entryPoints: cjsFilesToCompile,
+    entryPoints: srcFilesToCompile,
+    external,
     format: 'cjs',
     outdir: path.join(outDir, 'cjs'),
+    platform,
     plugins: [
       nodeExternalsPlugin({
         packagePath: packageJsonFiles,
       }),
       ...(userPlugins.cjs ?? []),
     ],
+    sourcemap,
+    target,
   });
   const compiledCJSFiles = glob.sync(path.join(outDir, 'cjs', '**', '*.js'), { absolute: true, onlyFiles: true });
   compiledCJSFiles.forEach(cjsFilePath => {

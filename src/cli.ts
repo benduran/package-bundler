@@ -4,21 +4,33 @@
  */
 
 import chalk from 'chalk';
-import type esbuild from 'esbuild';
 import glob from 'fast-glob';
 import fs from 'fs-extra';
 import path from 'path';
 import yargs from 'yargs';
 
 import { cleanDist } from './cleanDist';
-import { buildCJS, buildESM } from './esbuild';
+import { BuildBaseArgs, buildCJS, buildESM } from './esbuild';
 import { copyPackageJsonFile, rewritePackageJsonFile } from './packageJson';
 import { buildTypes } from './typescript';
+
+const DEFAULT_IGNORE_PATHS = [
+  '**/*__doc**/**',
+  '**/*__test**/**',
+  '**/*__stori**/**',
+  '**/*.spec.*',
+  '**/*.test.*',
+  '**/*.stories.*',
+  '**/*.story.*',
+  '**/*__snipp**/**',
+];
 
 async function packageBundlerCli() {
   const {
     copyPackageJson,
+    external,
     ignorePaths,
+    mergeIgnorePaths,
     packageJsonFiles,
     platform,
     rewritePackageJson,
@@ -36,26 +48,24 @@ async function packageBundlerCli() {
         'If true, copies the package json for the package to the outDir. Useful if you are using yarn, pnpm, lerna, or some other non vanilla NPM way of publishing your packages.',
       type: 'boolean',
     })
-    .option('ignorePaths', {
-      alias: 'i',
-      default: [
-        '**/*__doc**/**',
-        '**/*__test**/**',
-        '**/*__stori**/**',
-        '**/*.spec.*',
-        '**/*.test.*',
-        '**/*.stories.*',
-        '**/*.story.*',
-        '**/*__snipp**/**',
-      ],
-      description: 'Array of file glob paths to exclude in the source(s) being compiled.',
+    .option('external', {
+      alias: 'e',
+      default: [],
+      description:
+        "Marks one or more packages or file paths as external, and that these packages or paths should not be included in the build. For more information, see ESBuild's official documentation: https://esbuild.github.io/api/#external",
       type: 'array',
     })
-    .option('rewritePackageJson', {
-      alias: 'r',
-      default: false,
+    .option('ignorePaths', {
+      alias: 'i',
+      default: DEFAULT_IGNORE_PATHS,
       description:
-        'If true, and used in conjunction with ---copyPackageJson option, will attempt to inject and / or rewrite the "main," "module," "typings," etc fields to where their paths exist in the --outDir folder',
+        'Array of file glob paths to exclude in the source(s) being compiled. If you like these defaults, want to keep them, but also provide your own, you can set the --mergeIgnorePaths to have your paths merged with these.',
+      type: 'array',
+    })
+    .option('mergeIgnorePaths', {
+      description:
+        "If true, merges any provided paths you've set via --ignorePaths with package-bundler's default ones.",
+      default: false,
       type: 'boolean',
     })
     .option('outDir', {
@@ -76,6 +86,13 @@ async function packageBundlerCli() {
       default: 'browser',
       description: 'Which ESBuild platform to target for the build.',
       type: 'string',
+    })
+    .option('rewritePackageJson', {
+      alias: 'r',
+      default: false,
+      description:
+        'If true, and used in conjunction with ---copyPackageJson option, will attempt to inject and / or rewrite the "main," "module," "typings," etc fields to where their paths exist in the --outDir folder',
+      type: 'boolean',
     })
     .option('sourcemap', {
       default: true,
@@ -125,21 +142,41 @@ async function packageBundlerCli() {
   fs.ensureDirSync(outDir);
   const { name: packageName } = packageJSON;
   const justTheName = packageName.includes('/') ? packageName.substring(packageName.lastIndexOf('/') + 1) : packageName;
+
+  const mergedIgnorePaths = mergeIgnorePaths ? [...DEFAULT_IGNORE_PATHS, ...ignorePaths] : ignorePaths;
+
   const srcFilesToCompile = glob.sync(path.join(cwd, srcDir, '**', '*.{tsx,ts}'), {
     absolute: true,
-    ignore: ignorePaths,
+    ignore: mergedIgnorePaths,
     onlyFiles: true,
   });
 
   const cjsFilesToCompile = glob.sync(path.join(cwd, srcDir, '**', 'index.{tsx,ts}'), {
     absolute: true,
+    ignore: mergedIgnorePaths,
     onlyFiles: true,
   });
 
   await Promise.all([
     buildTypes(cwd, justTheName, outDir, tsconfigPath),
-    buildESM(srcFilesToCompile, outDir, sourcemap, target, platform as esbuild.Platform),
-    buildCJS(packageName, cjsFilesToCompile, outDir, sourcemap, packageJsonFiles, target, platform as esbuild.Platform),
+    buildESM({
+      external,
+      outDir,
+      platform: platform as BuildBaseArgs['platform'],
+      sourcemap,
+      srcFilesToCompile,
+      target,
+    }),
+    buildCJS({
+      external,
+      outDir,
+      packageJsonFiles,
+      packageName,
+      platform: platform as BuildBaseArgs['platform'],
+      sourcemap,
+      srcFilesToCompile: cjsFilesToCompile,
+      target,
+    }),
   ]);
   if (copyPackageJson) {
     await copyPackageJsonFile(cwd, outDir);
