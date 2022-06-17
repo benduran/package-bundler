@@ -44,15 +44,22 @@ Options:
                             the outDir. Useful if you are using yarn, pnpm,
                             lerna, or some other non vanilla NPM way of
                             publishing your packages. [boolean] [default: false]
+  -e, --external            Marks one or more packages or file paths as
+                            external, and that these packages or paths should
+                            not be included in the build. For more information,
+                            see ESBuild's official documentation:
+                            https://esbuild.github.io/api/#external
+                                                           [array] [default: []]
   -i, --ignorePaths         Array of file glob paths to exclude in the source(s)
-                            being compiled.
+                            being compiled. If you like these defaults, want to
+                            keep them, but also provide your own, you can set
+                            the --mergeIgnorePaths to have your paths merged
+                            with these.
   [array] [default: ["**/*__doc**/**","**/*__test**/**","**/*__stori**/**","**/*
      .spec.*","**/*.test.*","**/*.stories.*","**/*.story.*","**/*__snipp**/**"]]
-  -r, --rewritePackageJson  If true, and used in conjunction with
-                            ---copyPackageJson option, will attempt to inject
-                            and / or rewrite the "main," "module," "typings,"
-                            etc fields to where their paths exist in the
-                            --outDir folder           [boolean] [default: false]
+      --mergeIgnorePaths    If true, merges any provided paths you've set via
+                            --ignorePaths with package-bundler's default ones.
+                                                      [boolean] [default: false]
   -o, --outDir              Path to targeted publish directory relative to your
                             package working directory.
                                                     [string] [default: "./dist"]
@@ -63,6 +70,13 @@ Options:
                             automatically excluded from the ESM build).
                                                                [array] [default:
          ["/home/bduran/Documents/dev/opensource/package-bundler/package.json"]]
+      --platform            Which ESBuild platform to target for the build.
+           [string] [choices: "browser", "node", "neutral"] [default: "browser"]
+  -r, --rewritePackageJson  If true, and used in conjunction with
+                            ---copyPackageJson option, will attempt to inject
+                            and / or rewrite the "main," "module," "typings,"
+                            etc fields to where their paths exist in the
+                            --outDir folder           [boolean] [default: false]
       --sourcemap           If true, builds sourcemap files alongside your
                             compiled files             [boolean] [default: true]
   -s, --srcDir              Path to src directory relative to your package
