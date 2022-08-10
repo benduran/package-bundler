@@ -28,6 +28,7 @@ const DEFAULT_IGNORE_PATHS = [
 async function packageBundlerCli() {
   const {
     copyPackageJson,
+    noCJS,
     external,
     ignorePaths,
     mergeIgnorePaths,
@@ -116,6 +117,11 @@ async function packageBundlerCli() {
       description: 'Path to your tsconfig project file relative to your package working directory.',
       type: 'string',
     })
+    .option('noCJS', {
+      default: false,
+      description: 'If true, disables generating CJS files.',
+      type: 'boolean',
+    })
     .help().argv;
 
   const cwd = process.cwd();
@@ -157,7 +163,7 @@ async function packageBundlerCli() {
     onlyFiles: true,
   });
 
-  await Promise.all([
+  const builds = [
     buildTypes(cwd, justTheName, outDir, tsconfigPath),
     buildESM({
       external,
@@ -167,20 +173,30 @@ async function packageBundlerCli() {
       srcFilesToCompile,
       target,
     }),
-    buildCJS({
-      external,
-      outDir,
-      packageJsonFiles,
-      packageName,
-      platform: platform as BuildBaseArgs['platform'],
-      sourcemap,
-      srcFilesToCompile: cjsFilesToCompile,
-      target,
-    }),
-  ]);
+  ];
+
+  if (noCJS) {
+    console.info(chalk.yellow(`Skipping CJS build due to noCJS flag`));
+  } else {
+    builds.push(
+      buildCJS({
+        external,
+        outDir,
+        packageJsonFiles,
+        packageName,
+        platform: platform as BuildBaseArgs['platform'],
+        sourcemap,
+        srcFilesToCompile: cjsFilesToCompile,
+        target,
+      }),
+    );
+  }
+
+  await Promise.all(builds);
+
   if (copyPackageJson) {
     await copyPackageJsonFile(cwd, outDir);
-    if (rewritePackageJson) await rewritePackageJsonFile(cwd, outDir);
+    if (rewritePackageJson) await rewritePackageJsonFile(cwd, outDir, noCJS);
   }
 }
 
