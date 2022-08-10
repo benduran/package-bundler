@@ -12,7 +12,7 @@ export async function copyPackageJsonFile(cwd: string, outDir: string) {
 export async function rewritePackageJsonFile(cwd: string, outDir: string, noCJS: boolean) {
   const pjsonDistPath = path.join(outDir, 'package.json');
   const pjson = JSON.parse(await fs.readFile(pjsonDistPath, 'utf8')) as PackageJson;
-  if (!noCJS) pjson.main = './index.cjs.js';
+  pjson.main = noCJS ? './index.js' : './index.cjs.js';
   pjson.module = './index.js';
   pjson.types = './index.d.ts';
   delete pjson.publishConfig?.main;
