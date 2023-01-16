@@ -20,36 +20,34 @@
     "easy-to-use"
   ],
   "scripts": {
-    "precommit": "pnpm lint && pnpm test",
+    "precommit": "npm run lint && npm run test",
     "clean": "rm -rf ./dist",
     "start": "TS_NODE_FILES=true ts-node --project ./tsconfig.json ./src/cli.ts",
     "build": "./scripts/prepDist.js",
     "build:publish": "./scripts/prepDist.js && cd ./dist && npm publish --access public",
     "lint": "eslint './src/**/*.{ts,tsx}'",
     "lint:fixall": "eslint './src/**/*.{ts,tsx}' --fix",
-    "prepublishOnly": "pnpm build",
-    "setup": "npm install -g pnpm@$(cat pnpm-version) && pnpm install",
     "deps:check": "ncu -t minor",
     "deps:update": "ncu -t minor -u",
-    "git-pre-commit": "pnpm lint && pnpm lint:fixall && pnpm deps:check"
+    "git-pre-commit": "npm run lint && npm run lint:fixall && npm run deps:check"
   },
   "dependencies": {
     "chalk": "~4",
-    "esbuild": "^0.15.10",
-    "esbuild-node-externals": "^1.5.0",
+    "esbuild": "^0.16",
+    "esbuild-node-externals": "^1.6.0",
     "fast-glob": "^3.2.12",
-    "fs-extra": "^10.1.0",
-    "yargs": "^17.6.0"
+    "fs-extra": "^11.1.0",
+    "yargs": "^17.6.2"
   },
   "devDependencies": {
-    "@types/fs-extra": "^9.0.13",
-    "@types/node": "^18.8.2",
-    "@types/yargs": "^17.0.13",
+    "@types/fs-extra": "^11.0.1",
+    "@types/node": "^18.11.18",
+    "@types/yargs": "^17.0.19",
     "@vercel/git-hooks": "^1.0.0",
-    "eslint-config-react-yas": "^3.0.1",
-    "npm-check-updates": "^16.3.8",
+    "eslint-config-react-yas": "^3.0.2",
+    "npm-check-updates": "^16.6.2",
     "ts-node": "^10.9.1",
-    "type-fest": "^3.0.0",
-    "typescript": "^4.8.4"
+    "type-fest": "^3.5.2",
+    "typescript": "^4.9.4"
   }
 }
