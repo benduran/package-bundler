@@ -123,8 +123,4 @@ module.exports = {
 
 ## contributing
 
-This repository is using [pnpm](https://pnpm.io/) for its package manager. To get setup and running as quickly as possible, clone this repo and run the following command from the root of the repo:
-
-`npm run setup`
-
-This command will install the correct version of `pnpm` required for contributing, as well as all of the dependencies needed to run this package 👍
+This repository is was built using Node `18.13.0` and `npm 9.3.0`. Please be sure you have those installed before contributing.

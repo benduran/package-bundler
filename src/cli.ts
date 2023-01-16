@@ -149,7 +149,7 @@ async function packageBundlerCli() {
   const { name: packageName } = packageJSON;
   const justTheName = packageName.includes('/') ? packageName.substring(packageName.lastIndexOf('/') + 1) : packageName;
 
-  const mergedIgnorePaths = mergeIgnorePaths ? [...DEFAULT_IGNORE_PATHS, ...ignorePaths] : ignorePaths;
+  const mergedIgnorePaths = (mergeIgnorePaths ? [...DEFAULT_IGNORE_PATHS, ...ignorePaths] : ignorePaths) as string[];
 
   const srcFilesToCompile = glob.sync(path.join(cwd, srcDir, '**', '*.{tsx,ts}'), {
     absolute: true,
@@ -166,12 +166,12 @@ async function packageBundlerCli() {
   const builds = [
     buildTypes(cwd, justTheName, outDir, tsconfigPath),
     buildESM({
-      external,
+      external: external as string[],
       outDir,
       platform: platform as BuildBaseArgs['platform'],
       sourcemap,
       srcFilesToCompile,
-      target,
+      target: target as string[],
     }),
   ];
 
@@ -180,14 +180,14 @@ async function packageBundlerCli() {
   } else {
     builds.push(
       buildCJS({
-        external,
+        external: external as string[],
         outDir,
-        packageJsonFiles,
+        packageJsonFiles: packageJsonFiles as string[],
         packageName,
         platform: platform as BuildBaseArgs['platform'],
         sourcemap,
         srcFilesToCompile: cjsFilesToCompile,
-        target,
+        target: target as string[],
       }),
     );
   }
