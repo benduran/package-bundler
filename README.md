@@ -120,7 +120,9 @@ module.exports = {
 };
 ```
 
-
 ## contributing
 
-This repository is was built using Node `18.13.0` and `npm 9.3.0`. Please be sure you have those installed before contributing.
+This repository was built using Node `18.13.0` and `npm 9.3.0`. Please be sure you have those installed before contributing and issuing a PR. Thanks!
+
+### Similar projects
+* [tsup](https://www.npmjs.com/package/tsup)
