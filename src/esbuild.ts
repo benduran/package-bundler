@@ -20,7 +20,11 @@ interface ReadUserPluginsReturnType {
  */
 async function readUserPlugins(): Promise<Partial<ReadUserPluginsReturnType>> {
   const defaultOut: ReadUserPluginsReturnType = { cjs: [], esm: [] };
-  const pluginFilePath = path.join(process.cwd(), 'package-bundler.plugins.js');
+  const foundPotentialPlugins = await glob(path.join(process.cwd(), 'package-bundler.plugins*'), {
+    absolute: true,
+    onlyFiles: true,
+  });
+  const [pluginFilePath] = foundPotentialPlugins;
   try {
     const stat = await fs.stat(pluginFilePath);
     if (stat.isFile()) {

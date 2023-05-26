@@ -90,7 +90,7 @@ Options:
 ```
 
 ### plugins
-[esbuild](https://esbuild.github.io/plugins/) supports plugins for adapting builds to your needs. `package-bundler` allows you to provide your own plugins to enrich the sensible defaults provided by `package-bundler`. To do this, you can create a file named `package-bundler.plugins.js` in your repository (or whenever your CWD will be when building with `package-bundler`). This file should have the following format:
+[esbuild](https://esbuild.github.io/plugins/) supports plugins for adapting builds to your needs. `package-bundler` allows you to provide your own plugins to enrich the sensible defaults provided by `package-bundler`. To do this, you can create a file named `package-bundler.plugins.cjs` (**NOTE the `.cjs` extension**) in your repository (or whenever your CWD will be when building with `package-bundler`). This file should have the following format:
 
 ```javascript
 module.exports = {
