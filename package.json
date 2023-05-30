@@ -2,7 +2,7 @@
   "private": false,
   "name": "@better-builds/package-bundler",
   "bin": "index.js",
-  "version": "1.6.0",
+  "version": "1.6.1-beta.0",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -40,6 +40,7 @@
     "yargs": "^17.7.2"
   },
   "devDependencies": {
+    "@better-builds/lets-version": "^0.1.1-beta.13",
     "@types/fs-extra": "^11.0.1",
     "@types/node": "^18.16.3",
     "@types/yargs": "^17.0.24",
