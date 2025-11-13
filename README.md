@@ -1,3 +1,7 @@
+# This pacakge is no longer maintained and has been replaced by [ts-duality](https://github.com/benduran/ts-duality), which properly addresses dual publish CJS and ESM, but with modern standards and correctness (and is also much faster).
+
+---
+
 # @better-builds/package-bundler
 
 A CLI for compiling and bundling your TypeScript with ESM/CJS and deep exports support, `package-bundler` builds and bundles TypeScript packages in a style similar to `@apollo/client` and `@mui/material`, with support for deep exports to allow consumers to pick and choose imports they want. Not all imports are essential to a library, and some may carry expensive third party dependencies.
